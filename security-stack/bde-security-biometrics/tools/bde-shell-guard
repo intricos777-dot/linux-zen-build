@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""
+bde-shell-guard: Robust shell command executor with timeout bypass and output retry.
+Handles commands that hang, produce no output, or need interactive input.
+Usage: bde-shell-guard [options] COMMAND...
+"""
+import argparse
+import os
+import select
+import signal
+import subprocess
+import sys
+import time
+import threading
+
+class ShellGuard:
+    def __init__(self, timeout=30, retries=3, retry_delay=2, input_data=None,
+                 input_delay=0.5, capture_output=True, verbose=False):
+        self.timeout = timeout
+        self.retries = retries
+        self.retry_delay = retry_delay
+        self.input_data = input_data
+        self.input_delay = input_delay
+        self.capture_output = capture_output
+        self.verbose = verbose
+        self.results = []
+
+    def log(self, msg):
+        if self.verbose:
+            print(f"[guard] {msg}", file=sys.stderr)
+
+    def run_once(self, cmd):
+        self.log(f"exec: {' '.join(cmd)}")
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE if self.capture_output else None,
+                stderr=subprocess.PIPE if self.capture_output else None,
+                stdin=subprocess.PIPE if self.input_data else None,
+                preexec_fn=os.setsid,
+            )
+
+            stdout_data = b""
+            stderr_data = b""
+            got_output = False
+            start = time.time()
+
+            while time.time() - start < self.timeout:
+                rlist = [proc.stdout, proc.stderr] if self.capture_output else []
+                rlist = [f for f in rlist if f]
+                if not rlist:
+                    break
+
+                r, _, _ = select.select(rlist, [], [], 0.2)
+                if r:
+                    got_output = True
+                for f in r:
+                    chunk = os.read(f.fileno(), 4096)
+                    if not chunk:
+                        continue
+                    if f == proc.stdout:
+                        stdout_data += chunk
+                    elif f == proc.stderr:
+                        stderr_data += chunk
+
+                if self.input_data and proc.poll() is None:
+                    try:
+                        proc.stdin.write(self.input_data)
+                        proc.stdin.flush()
+                    except (BrokenPipeError, OSError):
+                        pass
+
+                if proc.poll() is not None:
+                    break
+
+            if proc.poll() is None:
+                self.log(f"timeout after {self.timeout}s, killing process group")
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                proc.wait(timeout=5)
+                return {
+                    "exit_code": -1,
+                    "stdout": stdout_data.decode(errors="replace"),
+                    "stderr": stderr_data.decode(errors="replace") + f"\n[guard] killed after {self.timeout}s timeout",
+                    "timed_out": True,
+                    "got_output": got_output,
+                }
+
+            return {
+                "exit_code": proc.returncode,
+                "stdout": stdout_data.decode(errors="replace"),
+                "stderr": stderr_data.decode(errors="replace"),
+                "timed_out": False,
+                "got_output": got_output,
+            }
+
+        except Exception as e:
+            return {
+                "exit_code": -1,
+                "stdout": "",
+                "stderr": str(e),
+                "timed_out": False,
+                "got_output": False,
+            }
+
+    def run(self, cmd):
+        for attempt in range(1, self.retries + 1):
+            self.log(f"attempt {attempt}/{self.retries}")
+            result = self.run_once(cmd)
+            self.results.append(result)
+
+            if result["timed_out"] and attempt < self.retries:
+                self.log(f"timed out, retrying in {self.retry_delay}s...")
+                time.sleep(self.retry_delay)
+                continue
+
+            if not result["got_output"] and result["exit_code"] != 0 and attempt < self.retries:
+                self.log(f"no output and non-zero exit, retrying...")
+                time.sleep(self.retry_delay)
+                continue
+
+            return result
+
+        return self.results[-1] if self.results else {"exit_code": -1, "stdout": "", "stderr": "no attempts", "timed_out": True, "got_output": False}
+
+    def run_parallel(self, commands):
+        results = []
+        threads = []
+        lock = threading.Lock()
+        container = [None] * len(commands)
+
+        def worker(idx, cmd):
+            r = self.run(cmd)
+            with lock:
+                container[idx] = r
+
+        for i, cmd in enumerate(commands):
+            t = threading.Thread(target=worker, args=(i, cmd))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join(timeout=self.timeout * self.retries + 10)
+
+        return container
+
+
+def parse_args():
+    p = argparse.ArgumentParser(description="Shell command executor with timeout/retry handling")
+    p.add_argument("command", nargs="*", help="Command to execute")
+    p.add_argument("-t", "--timeout", type=int, default=30, help="Timeout per attempt (seconds)")
+    p.add_argument("-r", "--retries", type=int, default=3, help="Max retry attempts")
+    p.add_argument("-d", "--retry-delay", type=float, default=2, help="Delay between retries")
+    p.add_argument("-i", "--input", help="String to send to stdin")
+    p.add_argument("-p", "--parallel", nargs="+", action="append", help="Run commands in parallel (repeatable)")
+    p.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    p.add_argument("--json", action="store_true", help="Output as JSON")
+    return p.parse_known_args()
+
+
+def main():
+    known, remaining = parse_args()
+    cmd = remaining if remaining else known.command
+    if not cmd:
+        print("No command specified. Use --help for usage.", file=sys.stderr)
+        sys.exit(1)
+
+    guard = ShellGuard(
+        timeout=known.timeout,
+        retries=known.retries,
+        retry_delay=known.retry_delay,
+        input_data=known.input.encode() if known.input else None,
+        verbose=known.verbose,
+    )
+
+    if known.parallel:
+        cmds = [c for group in known.parallel for c in [group] if isinstance(group, list)]
+        if not cmds:
+            cmds = known.parallel
+        results = guard.run_parallel([c if isinstance(c, list) else [c] for c in cmds])
+        for i, r in enumerate(results):
+            if r:
+                print(f"--- Command {i+1} ---")
+                if r["stdout"]:
+                    print(r["stdout"], end="")
+                if r["stderr"]:
+                    print(r["stderr"], end="", file=sys.stderr)
+                print(f"exit: {r['exit_code']}", file=sys.stderr)
+    elif cmd:
+        result = guard.run(cmd)
+        if known.json:
+            import json
+            print(json.dumps(result, indent=2))
+        else:
+            if result["stdout"]:
+                print(result["stdout"], end="")
+            if result["stderr"]:
+                print(result["stderr"], end="", file=sys.stderr)
+            sys.exit(result["exit_code"] if result["exit_code"] >= 0 else 1)
+    else:
+        print("No command specified. Use --help for usage.", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

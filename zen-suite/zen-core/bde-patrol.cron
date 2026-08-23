@@ -1,0 +1,4 @@
+# BDE patrol cron
+# Runs every 15 minutes, logs to /var/log/bde/bde-patrol.log
+# Run as root.
+*/15 * * * * root /usr/bin/env node /opt/zen-core/bde-patrol.ts run >> /var/log/bde/bde-patrol-cron.log 2>&1

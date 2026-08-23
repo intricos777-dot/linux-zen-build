@@ -1,0 +1,11 @@
+[Unit]
+Description=BDE HardLock Biometric Enforcement
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bde/hardlock/install-hardlock.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

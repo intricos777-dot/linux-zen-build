@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+BDE Bioelectric Verification Tool
+Tests live bioelectric signature against enrolled profile.
+Usage: bde-verify [username] [--threshold 0.85]
+"""
+import argparse
+import json
+import os
+import socket
+import struct
+import sys
+from pathlib import Path
+
+SOCKET_PATH = os.environ.get("BDE_SOCK", "/run/user/1000/bde-daemon.sock")
+STATE_DIR = Path("/var/lib/bde-daemon")
+
+
+def talk(action: str, data: dict = None) -> dict:
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(15.0)
+    s.connect(SOCKET_PATH)
+    payload = {"action": action}
+    if data:
+        payload.update(data)
+    s.sendall(json.dumps(payload).encode())
+    buf = b""
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        buf += chunk
+        if b"\n" in buf:
+            break
+    s.close()
+    return json.loads(buf.decode() or "{}")
+
+
+def verify(username: str, threshold: float = 0.85):
+    print(f"=== BDE Bioelectric Verification ===")
+    print(f"User: {username}")
+    print(f"Threshold: {threshold}")
+    print()
+
+    profile_path = STATE_DIR / f"{username}.profile"
+    if not profile_path.exists():
+        print(f"ERROR: No profile found for '{username}'")
+        print(f"  Run: bde-enroll {username}")
+        sys.exit(1)
+
+    stored_bytes = profile_path.read_bytes()
+    print(f"Profile loaded ({len(stored_bytes)} bytes)")
+    print("Place finger on sensor...")
+    print()
+
+    try:
+        resp = talk("capture")
+        if resp.get("status") != "ok":
+            print(f"ERROR: Capture failed: {resp}")
+            sys.exit(1)
+        sig = resp.get("signature", {})
+        live_hex = sig.get("raw_bytes", "")
+        if not live_hex:
+            print("ERROR: No signature data captured")
+            sys.exit(1)
+        live_bytes = bytes.fromhex(live_hex)
+    except Exception as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
+
+    if len(stored_bytes) != len(live_bytes):
+        print(f"ERROR: Feature mismatch (stored={len(stored_bytes)}, live={len(live_bytes)})")
+        sys.exit(1)
+
+    n = len(stored_bytes) // 8
+    stored_arr = list(struct.unpack(f"{n}d", stored_bytes))
+    live_arr = list(struct.unpack(f"{n}d", live_bytes))
+
+    mean_s = sum(stored_arr) / n
+    mean_l = sum(live_arr) / n
+    cov = sum((s - mean_s) * (l - mean_l) for s, l in zip(stored_arr, live_arr)) / n
+    std_s = (sum((s - mean_s) ** 2 for s in stored_arr) / n) ** 0.5
+    std_l = (sum((l - mean_l) ** 2 for l in live_arr) / n) ** 0.5
+
+    if std_s == 0 or std_l == 0:
+        print("ERROR: Zero variance in features")
+        sys.exit(1)
+
+    corr = cov / (std_s * std_l)
+    granted = corr >= threshold
+
+    print(f"Correlation: {corr:.4f}")
+    print(f"Threshold:   {threshold}")
+    print(f"Result:      {'GRANTED' if granted else 'DENIED'}")
+
+    if granted:
+        print()
+        print("Bioelectric signature verified.")
+        sys.exit(0)
+    else:
+        print()
+        print("Bioelectric signature does not match.")
+        sys.exit(1)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="BDE Bioelectric Verification")
+    parser.add_argument("username", nargs="?", default=os.environ.get("USER", "user"))
+    parser.add_argument("--threshold", type=float, default=0.85)
+    args = parser.parse_args()
+    verify(args.username, args.threshold)
+
+
+if __name__ == "__main__":
+    main()

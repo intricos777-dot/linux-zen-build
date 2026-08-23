@@ -1,0 +1,17 @@
+# Maintainer: Living Sin <intricos777@gmail.com>
+pkgname=bde-hardlock
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="BDE HardLock biometrics enforcement patch for BlackArch Linux"
+arch=('any')
+url="https://github.com/intricos777-dot/bde-security-biometrics"
+license=('MIT')
+depends=('pam' 'libfprint' 'python>=3.11')
+source=("bde-hardlock.pam" "bde-hardlock.service" "install-hardlock.sh")
+sha256sums=('SKIP' 'SKIP' 'SKIP')
+
+package() {
+  install -Dm644 "$srcdir/bde-hardlock.pam" "$pkgdir/etc/pam.d/bde-hardlock"
+  install -Dm644 "$srcdir/bde-hardlock.service" "$pkgdir/etc/systemd/system/bde-hardlock.service"
+  install -Dm755 "$srcdir/install-hardlock.sh" "$pkgdir/opt/bde/hardlock/install-hardlock.sh"
+}

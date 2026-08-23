@@ -1,0 +1,46 @@
+# Maintainer: Zen Suite Team
+# Bugfixed build: packages the artifacts that actually exist in this repo.
+# The original PKGBUILD referenced scripts/, config/, systemd/, security/,
+# sysusers/, tmpfiles/, udev/ directories and a release tarball + pem/der
+# sources that were never committed. This version builds from git and
+# ships zen-core tooling + hardening configs.
+pkgname=zen-suite
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="Zen Suite - Hardened Linux environments for security research and AI-driven operations"
+arch=('any')
+url="https://github.com/intricos777-dot/linux-zen-build"
+license=('MIT')
+makedepends=('git')
+
+source=("${pkgname}::git+https://github.com/intricos777-dot/linux-zen-build.git#branch=main")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/$pkgname/zen-suite/zen-core"
+
+    install -d "$pkgdir/etc/zen-suite"
+    install -d "$pkgdir/usr/bin"
+    install -d "$pkgdir/usr/lib/systemd/system"
+    install -d "$pkgdir/usr/share/doc/zen-suite"
+    install -d "$pkgdir/var/lib/bde-patrol"
+    install -d "$pkgdir/var/log/bde-patrol"
+
+    # Core guard tooling
+    install -Dm755 guard-wrapper.sh "$pkgdir/usr/bin/guard-wrapper"
+
+    # BDE patrol cron definition (user installs/enables via crontab)
+    install -Dm644 bde-patrol.cron "$pkgdir/etc/zen-suite/bde-patrol.cron"
+    install -Dm644 bde-patrol.ts "$pkgdir/usr/share/zen-suite/bde-patrol.ts" 2>/dev/null || true
+
+    # Hardening config
+    install -Dm644 ollama-hardening.conf "$pkgdir/etc/systemd/system/ollama.service.d/hardening.conf"
+    install -Dm644 zen-manifest.json "$pkgdir/etc/zen-suite/zen-manifest.json"
+
+    # Browser profiles, if present
+    if [ -d firefox ]; then cp -r firefox "$pkgdir/etc/zen-suite/firefox"; fi
+    if [ -d opera-gx ]; then cp -r opera-gx "$pkgdir/etc/zen-suite/opera-gx"; fi
+
+    chmod 700 "$pkgdir/var/lib/bde-patrol"
+    chmod 700 "$pkgdir/var/log/bde-patrol"
+}

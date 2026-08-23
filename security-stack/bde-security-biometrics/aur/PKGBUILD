@@ -1,0 +1,23 @@
+# Maintainer: Living Sin <intricos777@gmail.com>
+pkgname=bde-security-biometrics
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="BDE bioelectrical biometrics PAM module + daemon + browser bridge"
+arch=('any')
+url="https://github.com/intricos777-dot/bde-security-biometrics"
+license=('MIT')
+depends=('python>=3.11' 'python-requests' 'nodejs' 'npm')
+install='bde-security-biometrics.install'
+source=("bde-daemon.py" "bde-auth" "bde-daemon.service" "bde-auth.pam" "../void-browser/extension.js" "../void-browser/package.json")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+package() {
+  install -Dm755 "$srcdir/bde-daemon.py" "$pkgdir/opt/bde/daemon/bde-daemon.py"
+  install -Dm755 "$srcdir/bde-auth" "$pkgdir/usr/local/bin/bde-auth"
+  install -Dm644 "$srcdir/bde-daemon.service" "$pkgdir/etc/systemd/system/bde-daemon.service"
+  install -Dm644 "$srcdir/bde-auth.pam" "$pkgdir/etc/pam.d/bde-auth"
+  install -Dm644 "$srcdir/../tampermonkey/bde-bridge.user.js" "$pkgdir/usr/share/bde/tampermonkey/bde-bridge.user.js"
+  install -Dm755 "$srcdir/../../scripts/install-bde.sh" "$pkgdir/usr/bin/install-bde"
+  install -Dm644 "$srcdir/../void-browser/extension.js" "$pkgdir/usr/share/bde/void-browser/extension.js"
+  install -Dm644 "$srcdir/../void-browser/package.json" "$pkgdir/usr/share/bde/void-browser/package.json"
+}

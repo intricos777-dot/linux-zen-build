@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""
+BDE PAM Authentication Helper
+Captures bioelectric resonance signature and verifies against enrolled profile.
+Exit 0 = granted, Exit 1 = denied.
+"""
+import json
+import os
+import socket
+import sys
+import struct
+import hashlib
+
+SOCKET_PATH = os.environ.get("BDE_SOCK", "/run/user/1000/bde-daemon.sock")
+
+def talk(payload: bytes) -> dict:
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(10.0)
+    s.connect(SOCKET_PATH)
+    s.sendall(json.dumps({
+        "action": "verify",
+        "identity": "user",
+        "payload": payload.hex()
+    }).encode())
+    data = b""
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        data += chunk
+        if b"\n" in data:
+            break
+    s.close()
+    return json.loads(data.decode() or "{}")
+
+def capture_live() -> bytes:
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(15.0)
+    s.connect(SOCKET_PATH)
+    s.sendall(json.dumps({"action": "capture"}).encode())
+    data = b""
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        data += chunk
+        if b"\n" in data:
+            break
+    s.close()
+    resp = json.loads(data.decode() or "{}")
+    if resp.get("status") == "ok":
+        sig = resp.get("signature", {})
+        return bytes.fromhex(sig.get("raw_bytes", ""))
+    return b""
+
+def verify_against_profile(identity: str, live_bytes: bytes) -> dict:
+    profile_path = f"/var/lib/bde-daemon/{identity}.profile"
+    if not os.path.exists(profile_path):
+        return {"status": "denied", "reason": "no_profile"}
+    stored_bytes = open(profile_path, "rb").read()
+    if len(stored_bytes) != len(live_bytes):
+        return {"status": "denied", "reason": "feature_mismatch"}
+    n = len(stored_bytes) // 8
+    if n == 0:
+        return {"status": "denied", "reason": "empty_profile"}
+    stored_arr = list(struct.unpack(f"{n}d", stored_bytes))
+    live_arr = list(struct.unpack(f"{n}d", live_bytes))
+    mean_s = sum(stored_arr) / n
+    mean_l = sum(live_arr) / n
+    cov = sum((s - mean_s) * (l - mean_l) for s, l in zip(stored_arr, live_arr)) / n
+    std_s = (sum((s - mean_s) ** 2 for s in stored_arr) / n) ** 0.5
+    std_l = (sum((l - mean_l) ** 2 for l in live_arr) / n) ** 0.5
+    if std_s == 0 or std_l == 0:
+        return {"status": "denied", "reason": "zero_variance"}
+    corr = cov / (std_s * std_l)
+    return {"status": "granted" if corr >= 0.85 else "denied", "correlation": round(corr, 4)}
+
+def main():
+    identity = os.environ.get("PAM_USER", "user")
+    try:
+        live_bytes = capture_live()
+        if not live_bytes:
+            sys.exit(1)
+        result = verify_against_profile(identity, live_bytes)
+        if result.get("status") == "granted":
+            sys.exit(0)
+        sys.exit(1)
+    except Exception:
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""
+BDE Bioelectric Enrollment Tool
+Captures multiple bioelectric resonance samples and creates a secure enrollment profile.
+Usage: bde-enroll [username] [--samples N] [--duration SECS]
+"""
+import argparse
+import hashlib
+import json
+import os
+import socket
+import struct
+import sys
+import time
+from pathlib import Path
+
+SOCKET_PATH = os.environ.get("BDE_SOCK", "/run/user/1000/bde-daemon.sock")
+STATE_DIR = Path("/var/lib/bde-daemon")
+
+
+def talk(action: str, data: dict = None) -> dict:
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(15.0)
+    s.connect(SOCKET_PATH)
+    payload = {"action": action}
+    if data:
+        payload.update(data)
+    s.sendall(json.dumps(payload).encode())
+    buf = b""
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        buf += chunk
+        if b"\n" in buf:
+            break
+    s.close()
+    return json.loads(buf.decode() or "{}")
+
+
+def capture_sample() -> dict:
+    resp = talk("capture")
+    if resp.get("status") == "ok":
+        return resp.get("signature", {})
+    raise RuntimeError(f"Capture failed: {resp}")
+
+
+def average_features(all_features: list) -> list:
+    n = len(all_features[0])
+    avg = [0.0] * n
+    for features in all_features:
+        for i in range(n):
+            avg[i] += features[i]
+    return [v / len(all_features) for v in avg]
+
+
+def features_to_bytes(features: list) -> bytes:
+    return struct.pack(f"{len(features)}d", *features)
+
+
+def enroll(username: str, num_samples: int = 5, duration: float = 3.0):
+    print(f"=== BDE Bioelectric Enrollment ===")
+    print(f"User: {username}")
+    print(f"Samples: {num_samples}")
+    print(f"Duration: {duration}s per sample")
+    print()
+
+    all_features = []
+    for i in range(num_samples):
+        print(f"[{i+1}/{num_samples}] Capture sample... ", end="", flush=True)
+        try:
+            sig = capture_sample()
+            features = sig.get("features", [])
+            if not features:
+                print("FAILED (no features)")
+                continue
+            all_features.append(features)
+            print(f"OK ({len(features)} bins, hash={sig.get('hash', '?')[:16]}...)")
+        except Exception as e:
+            print(f"ERROR: {e}")
+        if i < num_samples - 1:
+            print("  [Move finger away, then back to sensor...]")
+            time.sleep(2)
+
+    if len(all_features) < 3:
+        print(f"\nERROR: Only {len(all_features)} valid samples captured (need >= 3)")
+        sys.exit(1)
+
+    print(f"\nAveraging {len(all_features)} samples...")
+    avg_features = average_features(all_features)
+    profile_bytes = features_to_bytes(avg_features)
+    profile_hash = hashlib.sha256(profile_bytes).hexdigest()
+
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    profile_path = STATE_DIR / f"{username}.profile"
+    profile_path.write_bytes(profile_bytes)
+    profile_path.chmod(0o600)
+
+    meta = {
+        "username": username,
+        "samples": len(all_features),
+        "hash": profile_hash,
+        "num_features": len(avg_features),
+        "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+    }
+    meta_path = STATE_DIR / f"{username}.meta.json"
+    meta_path.write_text(json.dumps(meta, indent=2))
+    meta_path.chmod(0o600)
+
+    print(f"\n=== Enrollment Complete ===")
+    print(f"  Profile: {profile_path}")
+    print(f"  Hash:    {profile_hash}")
+    print(f"  Features: {len(avg_features)} bins")
+    print(f"  Samples averaged: {len(all_features)}")
+    print()
+    print("Next: Add to PAM stack:")
+    print("  auth sufficient /usr/local/bin/bde-auth")
+    print("  auth required   pam_deny.so")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="BDE Bioelectric Enrollment")
+    parser.add_argument("username", nargs="?", default=os.environ.get("USER", "user"))
+    parser.add_argument("--samples", type=int, default=5)
+    parser.add_argument("--duration", type=float, default=3.0)
+    args = parser.parse_args()
+    enroll(args.username, args.samples, args.duration)
+
+
+if __name__ == "__main__":
+    main()

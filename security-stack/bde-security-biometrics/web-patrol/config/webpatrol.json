@@ -1,0 +1,18 @@
+{
+  "targets": [
+    "https://www.google.com/search?q=ai+competitive+intelligence",
+    "https://github.com/search?q=ai+scraper&type=repositories",
+    "https://news.ycombinator.com/",
+    "https://www.reddit.com/r/MachineLearning/",
+    "https://www.linkedin.com/jobs/",
+    "https://angel.co/jobs"
+  ],
+  "patterns": [
+    "real-time tracking", "webhook endpoint", "data enrichment api",
+    "competitor monitoring", "price intelligence", "sentiment analysis bot"
+  ],
+  "patrol_interval_minutes": 60,
+  "archive_retention_days": 365,
+  "legal_hold": true,
+  "notify_on_hit": true
+}

@@ -1,0 +1,50 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableSetDesktopBackground": true,
+    "DisableDeveloperTools": false,
+    "DisableFeedbackCommands": true,
+    "DisableFirefoxAccounts": true,
+    "DisableFirefoxSync": true,
+    "DisableProfileImport": true,
+    "DisableProfileRefresh": true,
+    "DisableSafeMode": true,
+    "DisableSystemAddonUpdate": true,
+    "Extensions": {
+      "Install": [],
+      "Locked": []
+    },
+    "Bookmarks": [],
+    "Preferences": {
+      "browser.startup.homepage": {
+        "Value": "about:blank",
+        "Locked": true
+      },
+      "browser.newtabpage.enabled": {
+        "Value": false,
+        "Locked": true
+      },
+      "network.cookie.cookieBehavior": {
+        "Value": 1,
+        "Locked": true
+      },
+      "privacy.trackingprotection.enabled": {
+        "Value": true,
+        "Locked": true
+      }
+    },
+    "Proxy": {
+      "Mode": "none",
+      "Locked": true
+    },
+    "DisableAppUpdate": true,
+    "DisableBuiltinPDFViewer": false,
+    "DisablePdfViewer": false,
+    "DisableSearchSuggestions": true,
+    "DisableFormHistory": true,
+    "DisablePasswordSaving": true,
+    "DisableFirefoxScreenshots": true
+  }
+}

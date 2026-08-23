@@ -1,0 +1,13 @@
+[Unit]
+Description=BDE Bioelectrical Biometrics Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/bde/daemon/bde-daemon.py
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+# /etc/pam.d/bde-auth
+# BDE bioelectrical biometrics PAM stack
+# Add to existing service files as needed, e.g.:
+#   auth sufficient pam_bde.so
+#   auth required pam_deny.so
+
+auth [success=1 default=ignore] /usr/local/bin/bde-auth
+auth required pam_deny.so

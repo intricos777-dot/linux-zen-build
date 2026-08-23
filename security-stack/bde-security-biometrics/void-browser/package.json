@@ -1,0 +1,17 @@
+{
+  "name": "bde-magic-browser",
+  "displayName": "BDE Magic Browser",
+  "description": "Port BDE biometric bridge through Void's built-in simple-browser/webview stack.",
+  "version": "1.0.0",
+  "publisher": "intricos777-dot",
+  "engines": { "vscode": "^1.70.0" },
+  "main": "./extension.js",
+  "browser": "./extension.js",
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:bdeMagicBrowser.open", "onWebviewPanel:bdeMagicBrowser.view"],
+  "contributes": {
+    "commands": [
+      { "command": "bdeMagicBrowser.open", "title": "Open BDE Magic Browser", "category": "BDE" }
+    ]
+  }
+}

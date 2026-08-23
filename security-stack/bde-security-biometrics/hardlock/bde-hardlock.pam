@@ -1,0 +1,6 @@
+# /etc/pam.d/bde-hardlock
+# BDE HardLock biometrics PAM stack
+# Enforces bioelectrical biometrics for all system access
+
+auth [success=1 default=ignore] /usr/local/bin/bde-auth
+auth required pam_deny.so
