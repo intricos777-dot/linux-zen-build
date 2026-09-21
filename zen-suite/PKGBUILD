@@ -1,46 +1,78 @@
 # Maintainer: Zen Suite Team
-# Bugfixed build: packages the artifacts that actually exist in this repo.
-# The original PKGBUILD referenced scripts/, config/, systemd/, security/,
-# sysusers/, tmpfiles/, udev/ directories and a release tarball + pem/der
-# sources that were never committed. This version builds from git and
-# ships zen-core tooling + hardening configs.
+# Updated: v1.2.0 - points at linux-zen-suite repo
 pkgname=zen-suite
-pkgver=1.1.0
+pkgver=1.2.0
 pkgrel=1
 pkgdesc="Zen Suite - Hardened Linux environments for security research and AI-driven operations"
 arch=('any')
-url="https://github.com/intricos777-dot/linux-zen-build"
+url="https://github.com/intricos777-dot/linux-zen-suite"
 license=('MIT')
 makedepends=('git')
 
-source=("${pkgname}::git+https://github.com/intricos777-dot/linux-zen-build.git#branch=main")
+source=("${pkgname}::git+https://github.com/intricos777-dot/linux-zen-suite.git#tag=v${pkgver}")
 sha256sums=('SKIP')
 
 package() {
-    cd "$srcdir/$pkgname/zen-suite/zen-core"
+    cd "$srcdir/${pkgname}/zen-core"
 
     install -d "$pkgdir/etc/zen-suite"
     install -d "$pkgdir/usr/bin"
     install -d "$pkgdir/usr/lib/systemd/system"
+    install -d "$pkgdir/usr/share/zen-suite"
     install -d "$pkgdir/usr/share/doc/zen-suite"
     install -d "$pkgdir/var/lib/bde-patrol"
     install -d "$pkgdir/var/log/bde-patrol"
+    install -d "$pkgdir/var/cache/zen/shader-cache"
+    install -d "$pkgdir/etc/zen"
+    install -d "$pkgdir/etc/systemd/system/ollama.service.d"
+    install -d "$pkgdir/etc/firefox/policies"
+    install -d "$pkgdir/etc/opt/opera-gx"
 
-    # Core guard tooling
-    install -Dm755 guard-wrapper.sh "$pkgdir/usr/bin/guard-wrapper"
+    # Core modules
+    install -Dm755 guard-wrapper.sh "$pkgdir/usr/bin/zen-guard"
+    install -Dm755 modules/guard-wrapper.sh "$pkgdir/usr/local/bin/zen-guard" 2>/dev/null || true
 
-    # BDE patrol cron definition (user installs/enables via crontab)
-    install -Dm644 bde-patrol.cron "$pkgdir/etc/zen-suite/bde-patrol.cron"
-    install -Dm644 bde-patrol.ts "$pkgdir/usr/share/zen-suite/bde-patrol.ts" 2>/dev/null || true
+    # BDE patrol
+    install -Dm644 bde-patrol.cron "$pkgdir/etc/cron.d/bde-patrol"
+    install -Dm644 bde-patrol.ts "$pkgdir/usr/share/zen-suite/bde-patrol.ts"
 
     # Hardening config
     install -Dm644 ollama-hardening.conf "$pkgdir/etc/systemd/system/ollama.service.d/hardening.conf"
+
+    # Manifest
     install -Dm644 zen-manifest.json "$pkgdir/etc/zen-suite/zen-manifest.json"
 
-    # Browser profiles, if present
+    # AI coordination service
+    install -Dm644 modules/ai-coordination-service "$pkgdir/etc/systemd/system/zen-ai-coordination.service"
+    install -Dm644 modules/ai-coordination-server.ts "$pkgdir/usr/share/zen-suite/ai-coordination-server.ts"
+
+    # Vulkan shader cache service
+    install -Dm644 modules/vulkan-shader-cache-service "$pkgdir/etc/systemd/system/zen-vulkan-shader-cache.service"
+    install -Dm644 modules/vulkan-shader-cache.ts "$pkgdir/usr/share/zen-suite/vulkan-shader-cache.ts"
+
+    # Intrusion notify service
+    install -Dm644 modules/intrusion-notify.ts "$pkgdir/usr/share/zen-suite/intrusion-notify.ts"
+    install -Dm644 modules/intrusion-notify.service "$pkgdir/etc/systemd/system/zen-intrusion-notify.service" 2>/dev/null || true
+
+    # Local function guard
+    install -Dm644 modules/local-function-guard.ts "$pkgdir/usr/share/zen-suite/local-function-guard.ts" 2>/dev/null || true
+
+    # Browser profiles
     if [ -d firefox ]; then cp -r firefox "$pkgdir/etc/zen-suite/firefox"; fi
     if [ -d opera-gx ]; then cp -r opera-gx "$pkgdir/etc/zen-suite/opera-gx"; fi
 
+    # Module install scripts
+    install -Dm755 modules/install-ai-coordination.sh "$pkgdir/usr/share/zen-suite/install-ai-coordination.sh"
+    install -Dm755 modules/install-vulkan-shader-cache.sh "$pkgdir/usr/share/zen-suite/install-vulkan-shader-cache.sh"
+
+    # AI coordination token placeholder
+    touch "$pkgdir/etc/zen/ai-coordination-token"
+    chmod 600 "$pkgdir/etc/zen/ai-coordination-token"
+
+    # Shader cache directory
+    install -dm755 "$pkgdir/var/cache/zen/shader-cache"
+
     chmod 700 "$pkgdir/var/lib/bde-patrol"
     chmod 700 "$pkgdir/var/log/bde-patrol"
+    chmod 700 "$pkgdir/var/cache/zen/shader-cache"
 }
