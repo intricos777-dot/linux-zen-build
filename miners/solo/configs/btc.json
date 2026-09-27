@@ -1,0 +1,39 @@
+{
+  "_comment": [
+    "BTC true solo. Payout address is the one already recorded in this repo's",
+    "README, preserved verbatim. Verified: valid base58check, version 0x05 (P2SH).",
+    "Nothing here points at a pool: the bridge talks to your own bitcoind only."
+  ],
+  "chain": "btc",
+  "address": "33oBrFCtn7SvqULsERymwtwmM8mXSrgcd9",
+
+  "_rpc_comment": [
+    "cookie is the preferred auth: bitcoind writes ~/.bitcoin/.cookie with",
+    "random credentials on every start, so there is no password to store or",
+    "rotate. The installer creates it automatically once bitcoind has run."
+  ],
+  "cookie": "~/.bitcoin/.cookie",
+  "rpchost": "127.0.0.1",
+  "rpcport": 8332,
+  "_rpcuser_comment": "Only used if you deliberately disable cookie auth.",
+  "rpcuser": "solo",
+  "rpcpassword": "CHANGE_ME",
+
+  "_stratum_comment": [
+    "Bound to 127.0.0.1 only. Solo mining pays the full block reward, so the",
+    "stratum port must never be exposed to a network you do not control:",
+    "anyone who can reach it can mine to your wallet, and anyone who reaches",
+    "the bridge with a stolen config can redirect the payout."
+  ],
+  "stratum_port": 3333,
+  "_listen_comment": "The bridge refuses to bind anywhere but loopback by default.",
+  "listen": "127.0.0.1",
+
+  "_share_comment": [
+    "Share difficulty 0.001 means one share per ~1000 network hashes. Stratum",
+    "uses this to meter hashrate; it does not change what counts as a block."
+  ],
+  "share_diff": 0.001,
+  "extranonce2_size": 4,
+  "poll_seconds": 1.0
+}

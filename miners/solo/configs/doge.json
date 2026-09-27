@@ -1,0 +1,37 @@
+{
+  "_NEEDS_A_VALID_ADDRESS": [
+    "The DOGE address recorded in this repo's README, Dai6AHB6D4M152PWjnHNFF8v,",
+    "is NOT a valid Dogecoin address. It is 24 characters, too short for a",
+    "base58check Dogecoin address, and its 4 byte checksum does not match its",
+    "payload (expected c143cf13, address carries 4701e383). It also uses base58",
+    "version 0x05, which is a Bitcoin P2SH version, not a Dogecoin one",
+    "(Dogecoin uses 0x1e for P2PKH and 0x16 for P2SH).",
+    "",
+    "It is preserved below exactly as recorded, because deleting the owner's",
+    "recorded value would lose the fact that it is wrong. The installer and the",
+    "bridge both refuse to start while this is the configured address, so no",
+    "work is done and no block can be lost to a typo.",
+    "",
+    "ACTION REQUIRED: generate a real address on the local dogecoind with",
+    "    dogecoin-cli -datadir=~/.dogecoin getnewaddress",
+    "and paste it into the 'address' field below. Solo mining pays the whole",
+    "block reward, so an address that cannot spend is the entire loss."
+  ],
+  "chain": "doge",
+  "address": "Dai6AHB6D4M152PWjnHNFF8v",
+
+  "_address_note": "INVALID, see _NEEDS_A_VALID_ADDRESS above. Must be replaced.",
+
+  "cookie": "~/.dogecoin/.cookie",
+  "rpchost": "127.0.0.1",
+  "rpcport": 22555,
+  "rpcuser": "solo",
+  "rpcpassword": "CHANGE_ME",
+
+  "stratum_port": 3335,
+  "listen": "127.0.0.1",
+
+  "share_diff": 0.001,
+  "extranonce2_size": 4,
+  "poll_seconds": 1.0
+}

@@ -1,0 +1,38 @@
+{
+  "_comment": [
+    "RVN true solo, on KawPoW. This is the one genuinely GPU-mineable coin in",
+    "this set. Bitcoin is not: SHA-256 has been ASIC-only since 2013, so the",
+    "RTX 3050 in this machine cannot mine BTC competitively. Do not look for",
+    "a GPU BTC miner to add here, because there isn't one to add.",
+    "",
+    "Ravencoin Core is NOT in the Arch binary repos and NOT in the AUR under",
+    "this name. The AUR has electrum-ravencoin and raven-qt (wallets only),",
+    "neither of which is a full node. The installer's ravencoin stage is",
+    "therefore marked UNAVAILABLE and refuses to pretend otherwise; see",
+    "docs/RVN-NODE-GAP.md for the two supported ways forward."
+  ],
+  "chain": "rvn",
+  "_NEEDS_A_VALID_ADDRESS": [
+    "NO RAVENCOIN ADDRESS IS ON RECORD anywhere in this repository, and none",
+    "has been invented here. An unverified or guessed address is worse than no",
+    "address at all, because a typo silently burns the entire block reward.",
+    "Generate one on your own ravend with:",
+    "    raven-cli -datadir=~/.ravencoin getnewaddress",
+    "and paste it below."
+  ],
+  "address": "REPLACE_WITH_YOUR_RAVENCOIN_ADDRESS",
+
+  "cookie": "~/.ravencoin/.cookie",
+  "rpchost": "127.0.0.1",
+  "rpcport": 8766,
+  "rpcuser": "solo",
+  "rpcpassword": "CHANGE_ME",
+
+  "stratum_port": 3336,
+  "listen": "127.0.0.1",
+
+  "_share_comment": "KawPoW runs at GH/s, so shares come thick and fast.",
+  "share_diff": 0.01,
+  "extranonce2_size": 4,
+  "poll_seconds": 1.0
+}

@@ -1,0 +1,29 @@
+{
+  "_comment": [
+    "LTC true solo, as its own independent node.",
+    "",
+    "There is no merged or 'dual' LTC+DOGE mining here and there cannot be:",
+    "Dogecoin removed auxpow in 2014 (v1.6). LTC and DOGE are two separate",
+    "chains with two separate daemons, two separate wallets and two separate",
+    "block rewards. A shared stratum endpoint would mine one chain's blocks",
+    "and pay them to the other chain's address, which is unspendable.",
+    "",
+    "Payout address preserved verbatim from this repo's README. Verified:",
+    "valid base58check, version 0x32 = 50 = Litecoin SCRIPT_ADDRESS."
+  ],
+  "chain": "ltc",
+  "address": "MQ3qudKtDzSmwg7tHUV7JZTXizLYBtzffj",
+
+  "cookie": "~/.litecoin/.cookie",
+  "rpchost": "127.0.0.1",
+  "rpcport": 9332,
+  "rpcuser": "solo",
+  "rpcpassword": "CHANGE_ME",
+
+  "stratum_port": 3334,
+  "listen": "127.0.0.1",
+
+  "share_diff": 0.001,
+  "extranonce2_size": 4,
+  "poll_seconds": 1.0
+}
