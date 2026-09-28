@@ -36,6 +36,29 @@ MODE="${BDE_SYNC_MODE:-user}"
 
 case "$MODE" in
   user)
+    # The daemon also opens a unix socket at a hardcoded /var/run path, which a
+    # user service cannot create (EACCES -> exit 1 -> restart loop). Verified:
+    # starting it as a user unit crash-loops on exactly that. So user mode
+    # overrides the socket location to a user-writable path via BDE_SOCKET.
+    #
+    # BDE_SOCKET is only honoured if the daemon supports it; check with:
+    #   grep -n 'BDE_SOCKET' <dest>/bde-sync.js
+    # If it does not, use --mode system instead of running a broken unit.
+    if ! grep -q 'BDE_SOCKET' "$SYNC_DIR/bde-sync.js" 2>/dev/null; then
+      cat <<EOF
+[!] $SYNC_DIR/bde-sync.js hardcodes its unix socket to /var/run and does
+    not honour BDE_SOCKET, so a --user unit cannot run it: it exits 1 with
+    EACCES on listen and restart-loops.
+
+    Refusing to install a unit that cannot start. Use system mode instead:
+
+        BDE_SYNC_MODE=system bash $0
+
+    or leave it uninstalled. Not enabling a known-broken unit.
+EOF
+      exit 1
+    fi
+    SOCKET="${XDG_RUNTIME_DIR:-$HOME/.local/state}/bde-sync.sock"
     cat > "$USER_UNIT_DIR/$UNIT" <<EOF
 [Unit]
 Description=BDE Sync Daemon (user)
@@ -45,6 +68,7 @@ After=network-online.target
 Type=simple
 ExecStart=/usr/bin/node %h/workspace/bde-security-biometrics/sync/bde-sync.js
 WorkingDirectory=%h/workspace/bde-security-biometrics/sync
+Environment=BDE_SOCKET=$SOCKET
 Restart=on-failure
 RestartSec=3
 Environment=NODE_ENV=production
@@ -53,6 +77,7 @@ Environment=NODE_ENV=production
 WantedBy=default.target
 EOF
     echo "[+] wrote $USER_UNIT_DIR/$UNIT (user mode: starts at login)"
+    echo "    unix socket -> $SOCKET"
     sed 's/^/    /' "$USER_UNIT_DIR/$UNIT"
     systemctl --user daemon-reload
     systemctl --user enable "$UNIT"
