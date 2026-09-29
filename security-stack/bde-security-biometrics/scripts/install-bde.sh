@@ -2,7 +2,10 @@
 # BDE Security Biometrics Installer for Garuda/Arch Linux
 set -euo pipefail
 
-BDE_DIR="/home/sin/workspace/bde-security-biometrics"
+# Resolve from this script's own location. The hardcoded /home/sin/workspace
+# path does not exist on this host, so the installer could never find its own
+# sources — every install step silently operated on missing files.
+BDE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENV_PYTHON="$BDE_DIR/.venv/bin/python"
 
 echo "=== BDE Security Biometrics Installer ==="
