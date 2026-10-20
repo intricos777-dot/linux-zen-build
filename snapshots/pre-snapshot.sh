@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Copyright (c) 2026 Living Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Licensed under Living Sin Proprietary License (LSPL-1.0)
+# See LICENSE file for details.
 # PRE-snapshot: capture root + home before rebuild operations.
 #
 # Thin wrapper around snapgood. All snapshot state, retention, and pinning

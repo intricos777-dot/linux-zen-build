@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Copyright (c) 2026 Living Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Licensed under Living Sin Proprietary License (LSPL-1.0)
+# See LICENSE file for details.
 # Deploy BDE security biometrics (PAM daemon) to ~/workspace.
 # Uses bundled verified copy — no GitHub clone needed (upstream .venv bloat breaks transfers).
 set -euo pipefail

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Copyright (c) 2026 Living Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
+# Licensed under Living Sin Proprietary License (LSPL-1.0)
+# See LICENSE file for details.
 # Mine Ravencoin solo on the GPU (KawPoW), against your own ravend.
 #
 # This is the one coin in this repo a GPU is genuinely the right tool for.
