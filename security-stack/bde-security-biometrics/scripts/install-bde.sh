@@ -3,7 +3,7 @@
 # BDE Security Biometrics Installer for Garuda/Arch Linux
 set -euo pipefail
 
-# Resolve from this script's own location. The hardcoded /home/sin/workspace
+# Resolve from this script's own location. The hardcoded /home/livings/workspace
 # path does not exist on this host, so the installer could never find its own
 # sources — every install step silently operated on missing files.
 BDE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
