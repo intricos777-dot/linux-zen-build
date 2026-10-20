@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Deploy the void-browser extension (BDE-integrated browser).
 #
 # A VS Code-style extension package. Building it needs npm; installing the

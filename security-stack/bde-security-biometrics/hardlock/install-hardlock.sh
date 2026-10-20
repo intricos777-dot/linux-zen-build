@@ -1,4 +1,5 @@
 #!/bin/bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # BDE HardLock Installer for BlackArch Linux
 # Enforces biometric authentication at boot and system lock
 set -euo pipefail

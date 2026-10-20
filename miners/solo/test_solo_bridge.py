@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """End-to-end tests for the solo bridge, against a fake daemon.
 
 A real end-to-end run: start a fake coin daemon that speaks getblocktemplate

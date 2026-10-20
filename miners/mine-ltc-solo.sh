@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Mine LTC solo, against your own litecoind.
 #
 # This is TRUE solo: no pool, no shared ledger, no dev fee, 100% of any block

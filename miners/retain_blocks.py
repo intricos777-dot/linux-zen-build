@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """Prune miner scratch files, but keep proof of blocks that actually landed.
 
 A solo miner writes a lot of transient junk: stratum logs, share files, stale

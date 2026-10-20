@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # guard-wrapper.sh
 # Secure wrapper for local-function-guard.ts
 # Installs allowlists, sets permissions, creates systemd user unit.

@@ -1,3 +1,4 @@
+// Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 // ==UserScript==
 // @name         BDE Biometric Bridge
 // @namespace    http://localhost:4123

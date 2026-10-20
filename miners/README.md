@@ -1,3 +1,4 @@
+<!-- Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work -->
 # True solo mining: BTC, LTC, DOGE, RVN
 
 Four independent solo miners, each mining against its own local full node. No

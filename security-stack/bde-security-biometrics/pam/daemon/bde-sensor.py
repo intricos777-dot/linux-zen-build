@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """
 BDE Bioelectrical Resonance Sensor
 Captures audio-based bioelectric resonance signatures via microphone.

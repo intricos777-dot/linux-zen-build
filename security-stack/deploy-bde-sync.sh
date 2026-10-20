@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Deploy the BDE cross-device sync daemon.
 #
 # Sync is a user-level background service, so this is a plain --user unit with

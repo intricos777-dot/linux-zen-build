@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """Local stratum bridge: mine solo against your own daemon, no pool.
 
     miner  <--stratum+tcp-->  this  <--JSON-RPC-->  bitcoind/litecoind/...

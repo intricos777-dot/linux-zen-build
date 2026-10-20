@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Deploy local-emergency-patrol to ~/Projects.
 set -euo pipefail
 PROJECTS="$HOME/Projects"

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Mine DOGE solo, against your own dogecoind.
 #
 # TRUE solo, and a node entirely separate from LTC. Dogecoin removed auxpow

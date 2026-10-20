@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # linux-zen-build: full rebuild entry point.
 # Run AFTER pre-snapshot.sh. Order matters.
 set -euo pipefail

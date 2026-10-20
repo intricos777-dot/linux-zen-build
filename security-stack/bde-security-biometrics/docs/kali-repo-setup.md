@@ -1,3 +1,4 @@
+<!-- Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work -->
 # Kali Linux apt repo setup
 
 BDE packages are GPG-signed and the repo is pinned to a dedicated keyring.

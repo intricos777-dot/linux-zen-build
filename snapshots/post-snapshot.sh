@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # POST-snapshot: capture root + home after rebuild operations.
 #
 # Thin wrapper around snapgood, mirroring pre-snapshot.sh. Pair them with

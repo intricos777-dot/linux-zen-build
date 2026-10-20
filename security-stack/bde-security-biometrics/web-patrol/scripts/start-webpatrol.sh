@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Start web patrol manually via bde-sync HTTP API
 set -euo pipefail
 SYNC_PORT="${BDE_SYNC_PORT:-4124}"

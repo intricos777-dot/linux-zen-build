@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Mine Ravencoin solo on the GPU (KawPoW), against your own ravend.
 #
 # This is the one coin in this repo a GPU is genuinely the right tool for.

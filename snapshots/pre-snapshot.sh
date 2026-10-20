@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # PRE-snapshot: capture root + home before rebuild operations.
 #
 # Thin wrapper around snapgood. All snapshot state, retention, and pinning

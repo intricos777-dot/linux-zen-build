@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Mine BTC solo on the CPU, against your own bitcoind.
 #
 # TRUE solo: no pool, no dev fee, 100% of the block reward.

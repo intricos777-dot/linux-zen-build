@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """
 BDE Touchpad Biometric Sensor
 Reads raw touch events from the touchpad and extracts a unique touch signature.

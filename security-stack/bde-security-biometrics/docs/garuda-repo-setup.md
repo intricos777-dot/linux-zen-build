@@ -1,3 +1,4 @@
+<!-- Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work -->
 # Garuda Linux / BlackArch pacman repo setup
 
 BDE packages are GPG-signed. **An unsigned or mis-signed package is rejected.**

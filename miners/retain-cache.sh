@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Periodic cache retention for the solo miner set.
 #
 # Cache is disposable; confirmed blocks are not. This runs retain_blocks.py,

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 /**
  * BDE Sync Client
  * HTTP client to bde-sync daemon at http://127.0.0.1:4124 or unix:///var/run/bde-sync.sock

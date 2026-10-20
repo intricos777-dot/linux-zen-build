@@ -1,3 +1,4 @@
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """Block construction primitives for local solo mining.
 
 These are the parts that must be exactly right or the rig silently never finds

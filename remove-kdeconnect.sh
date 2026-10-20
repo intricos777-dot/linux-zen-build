@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Remove kdeconnect safely, with a rollback path.
 #
 # WHY THIS SCRIPT EXISTS

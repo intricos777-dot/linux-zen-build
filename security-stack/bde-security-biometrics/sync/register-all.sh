@@ -1,4 +1,5 @@
 #!/bin/bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 set -euo pipefail
 SYNC="bde-sync-client"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

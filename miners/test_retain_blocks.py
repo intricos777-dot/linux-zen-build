@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 """Tests for retain_blocks.py against a stub JSON-RPC node.
 
 The retention rule is "cache is disposable, confirmed blocks are not", so the

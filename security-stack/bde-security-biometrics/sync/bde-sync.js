@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 /**
  * BDE Sync Daemon
  * Unix-domain socket server for patrol ↔ wrapper communication.

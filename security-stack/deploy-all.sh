@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Watermark: Living_Sin (intricos777-dot) + AI agents (Hermes, Lia, opencode) - collaborative work
 # Deploy any component of the BDE security stack.
 #
 #   ./deploy-all.sh                 # list what is available
