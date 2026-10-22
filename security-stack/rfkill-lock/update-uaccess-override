@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+src=/usr/lib/udev/rules.d/70-uaccess.rules
+dst=/etc/udev/rules.d/70-uaccess.rules
+[ -f "$src" ] || { echo "missing $src" >&2; exit 1; }
+tmp="$(mktemp "${dst}.tmp.XXXXXX")"
+grep -v 'rfkill' "$src" > "$tmp" || true
+chown root:root "$tmp"
+chmod 0644 "$tmp"
+mv -f "$tmp" "$dst"
+if [ -S /run/udev/control ]; then
+    udevadm control --reload-rules || true
+fi

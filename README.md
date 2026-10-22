@@ -10,7 +10,8 @@ quantum-enochian encryption system. Private by design.
 - `quantum-enochian/` — 21-layer layered encryption engine (3 triads of 7),
   binary-safe unwrap fix, full test suite
 - `security-stack/` — deploy scripts: lin-antimalware (linAV), lin-antimalware-tools,
-  local-emergency-patrol, bde-security-biometrics PAM daemon
+  local-emergency-patrol, bde-security-biometrics PAM daemon, rfkill-lock
+  (wifi killswitch hardening)
 - `zen-suite/` — buildable PKGBUILD for zen-core tooling
 - `snapshots/` — pre/post btrfs snapshot helpers
 - `docs/BUGFIXES.md` — every fix applied during this rebuild

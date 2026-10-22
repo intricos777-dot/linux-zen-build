@@ -1,0 +1,10 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = usr/lib/udev/rules.d/70-uaccess.rules
+
+[Action]
+Description = Regenerating local uaccess override with rfkill excluded
+When = PostTransaction
+Exec = /usr/local/lib/rfkill-lock/update-uaccess-override
